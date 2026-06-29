@@ -175,7 +175,7 @@ sudo apt update && sudo apt install -y \
 ### 1. Клонирование репозитория
 
 ```bash
-git clone <url>
+git clone https://github.com/leocallidus
 cd verifika
 ```
 

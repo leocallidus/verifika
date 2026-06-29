@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+
+  --color-bg: #fafafa;
+  --color-bg-elevated: #ffffff;
+  --color-bg-muted: #f4f4f5;
+
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+
+  --color-text-primary: #18181b;
+  --color-text-secondary: #3f3f46;
+  --color-text-muted: #71717a;
+
+  --color-accent: #4f46e5;
+  --color-accent-fg: #ffffff;
+  --color-accent-hover: #4338ca;
+
+  --color-success: #16a34a;
+  --color-success-bg: #dcfce7;
+  --color-warning: #d97706;
+  --color-warning-bg: #fef3c7;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fee2e2;
+  --color-info: #0284c7;
+  --color-info-bg: #e0f2fe;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+
+@layer theme {
+  .dark {
+    --color-bg: #09090b;
+    --color-bg-elevated: #18181b;
+    --color-bg-muted: #1e1e21;
+
+    --color-border: #27272a;
+    --color-border-strong: #3f3f46;
+
+    --color-text-primary: #fafafa;
+    --color-text-secondary: #d4d4d8;
+    --color-text-muted: #a1a1aa;
+
+    --color-accent: #818cf8;
+    --color-accent-fg: #18181b;
+    --color-accent-hover: #a5b4fc;
+
+    --color-success: #4ade80;
+    --color-success-bg: #052e1610;
+    --color-warning: #fbbf24;
+    --color-warning-bg: #2e1d0310;
+    --color-danger: #f87171;
+    --color-danger-bg: #2e060610;
+    --color-info: #38bdf8;
+    --color-info-bg: #082f4910;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+  }
+  .dark {
+    color-scheme: dark;
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+  }
+
+  /* @note: 1. explicit body bg so Tauri WebView (transparent native bg) doesn't
+            show its dark backdrop through our transparent body;
+        2. 100vh fallback for older webkit2gtk (e.g. Tauri on Linux GTK). */
+  html, body, #root { min-height: 100vh; }
+  @supports (min-height: 100dvh) {
+    html, body, #root { min-height: 100dvh; }
+  }
+  body {
+    background-color: var(--color-bg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    margin: 0;
+  }
+
+  *, *::before, *::after {
+    border-color: var(--color-border);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  :focus:not(:focus-visible) { outline: 0; }
+
+  button, [role="button"], a { -webkit-tap-highlight-color: transparent; }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.25rem;
+    padding: 0 0.875rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, opacity 150ms ease, transform 80ms ease;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-sm { height: 2rem; padding: 0 0.625rem; font-size: 0.8125rem; }
+  .btn-lg { height: 2.75rem; padding: 0 1.25rem; font-size: 0.9375rem; }
+  .btn-touch { min-height: 2.75rem; padding-left: 1rem; padding-right: 1rem; }
+
+  .btn-primary { background-color: var(--color-accent); color: var(--color-accent-fg); }
+  .btn-primary:hover:not(:disabled) { background-color: var(--color-accent-hover); }
+  .btn-secondary { background-color: var(--color-bg-elevated); color: var(--color-text-primary); border: 1px solid var(--color-border); }
+  .btn-secondary:hover:not(:disabled) { background-color: var(--color-bg-muted); border-color: var(--color-border-strong); }
+  .btn-ghost { background-color: transparent; color: var(--color-text-primary); }
+  .btn-ghost:hover:not(:disabled) { background-color: var(--color-bg-muted); }
+  .btn-danger { background-color: var(--color-danger); color: #fff; }
+  .btn-danger:hover:not(:disabled) { background-color: #b91c1c; }
+
+  .input {
+    display: block;
+    width: 100%;
+    height: 2.25rem;
+    padding: 0 0.625rem;
+    background-color: var(--color-bg-elevated);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .input::placeholder { color: var(--color-text-muted); }
+  .input:focus { outline: 0; border-color: var(--color-accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 15%, transparent); }
+  .input:disabled { opacity: 0.5; cursor: not-allowed; }
+  .input-invalid { border-color: var(--color-danger); }
+  .input-invalid:focus { box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-danger) 15%, transparent); }
+
+  .safe-bottom {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.375rem;
+  }
+
+  .card {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .no-copy { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

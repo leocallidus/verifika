@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Verifika",
+  "version": "0.1.0",
+  "identifier": "ru.univ.verifika",
+  "build": {
+    "beforeDevCommand": "bun run dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "bun run build",
+    "frontendDist": "../dist"
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [],
+      "pubkey": ""
+    }
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "Верифика",
+        "width": 1280,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "backgroundColor": "#09090B"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["deb", "rpm"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png",
+      "icons/icon-1024.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "category": "Education",
+    "shortDescription": "Верифика — система тестирования",
+    "longDescription": "Кроссплатформенная система тестирования студентов Верифика с детальной аналитикой для преподавателей"
+  }
+}

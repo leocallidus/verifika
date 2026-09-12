@@ -19,12 +19,13 @@ fi
 STAGING_DIR="$(mktemp -d)"
 trap 'rm -rf "${STAGING_DIR}"' EXIT
 
-mkdir -p "${STAGING_DIR}/icons"
 cp "${BINARY_PATH}" "${STAGING_DIR}/verifika"
 cp "${SCRIPT_DIR}/ru.univ.verifika.desktop" "${STAGING_DIR}/"
 cp "${SCRIPT_DIR}/ru.univ.verifika.metainfo.xml" "${STAGING_DIR}/"
 cp "${SCRIPT_DIR}/ru.univ.verifika.yml" "${STAGING_DIR}/"
-cp -r "${REPO_ROOT}/frontend/src-tauri/icons"/* "${STAGING_DIR}/icons/"
+cp "${REPO_ROOT}/frontend/src-tauri/icons/32x32.png" "${STAGING_DIR}/"
+cp "${REPO_ROOT}/frontend/src-tauri/icons/128x128.png" "${STAGING_DIR}/"
+cp "${REPO_ROOT}/frontend/src-tauri/icons/icon.png" "${STAGING_DIR}/"
 
 cd "${STAGING_DIR}"
 

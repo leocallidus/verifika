@@ -477,16 +477,21 @@ async fn set_anti_screenshot(app: AppHandle, enabled: bool) -> Result<(), String
     {
         if let Some(win) = app.get_webview_window("main") {
             let hwnd = win.hwnd().map_err(|e| e.to_string())?;
-            use windows::Win32::UI::WindowsAndMessaging::{
-                SetWindowDisplayAffinity, WDA_EXCLUDEFROMCAPTURE, WDA_NONE,
-            };
+            extern "system" {
+                fn SetWindowDisplayAffinity(hWnd: *mut std::ffi::c_void, dwAffinity: u32) -> i32;
+            }
+            const WDA_NONE: u32 = 0x00000000;
+            const WDA_EXCLUDEFROMCAPTURE: u32 = 0x00000011;
             let affinity = if enabled {
                 WDA_EXCLUDEFROMCAPTURE
             } else {
                 WDA_NONE
             };
-            unsafe {
-                SetWindowDisplayAffinity(hwnd, affinity).map_err(|e| e.to_string())?;
+            let ret = unsafe {
+                SetWindowDisplayAffinity(hwnd.0 as *mut std::ffi::c_void, affinity)
+            };
+            if ret == 0 {
+                return Err("Failed to set window display affinity".into());
             }
         }
     }

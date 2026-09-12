@@ -46,7 +46,7 @@ core-foundation = "0.10"
 
 [target."cfg(target_os = \"windows\")".dependencies]
 # Win32 SetThreadExecutionState to keep the system awake during a test.
-windows = { version = "0.58", features = ["Win32_System_Power", "Win32_UI_WindowsAndMessaging", "Win32_Foundation"] }
+windows = { version = "0.58", features = ["Win32_System_Power"] }
 
 [profile.release]
 panic = "abort"

@@ -320,12 +320,6 @@ jobs:
           cd frontend
           bun run tauri build --target universal-apple-darwin --bundles dmg
 
-      - name: Build Apple Silicon & Intel DMGs
-        run: |
-          cd frontend
-          bun run tauri build --target aarch64-apple-darwin --bundles dmg || true
-          bun run tauri build --target x86_64-apple-darwin --bundles dmg || true
-
       - name: Collect macOS DMG packages
         run: |
           mkdir -p dist-macos

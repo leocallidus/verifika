@@ -1,29 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#6366F1"/>
-      <stop offset="100%" stop-color="#4338CA"/>
-    </linearGradient>
-    <linearGradient id="board" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#E0E7FF"/>
-    </linearGradient>
-    <linearGradient id="tassel" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#FCD34D"/>
-      <stop offset="100%" stop-color="#F59E0B"/>
-    </linearGradient>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Outer circle -->
+  <circle cx="50" cy="50" r="46" fill="#0f172a" stroke="#eab308" stroke-width="2.5"/>
+  <!-- Inner ring -->
+  <circle cx="50" cy="50" r="40" fill="#1e293b" stroke="#ca8a04" stroke-width="0.8"/>
+  
+  <!-- Laurel wreath -->
+  <g fill="#eab308" opacity="0.9">
+    <!-- Left wreath -->
+    <path d="M 22 55 C 20 42 28 32 36 26 C 34 30 32 36 32 42 C 28 46 24 50 22 55 Z"/>
+    <circle cx="23" cy="50" r="2.2"/>
+    <circle cx="26" cy="42" r="2.2"/>
+    <circle cx="31" cy="35" r="2.2"/>
+    <circle cx="37" cy="30" r="2"/>
 
-  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
-
-  <polygon points="32,15 56,25 32,35 8,25" fill="url(#board)"/>
-  <path d="M17,30 L17,40 Q32,49 47,40 L47,30 L32,37 Z" fill="#ffffff" opacity="0.95"/>
-
-  <circle cx="48" cy="38" r="2.6" fill="url(#tassel)"/>
-  <path d="M48,40 L48,50" stroke="url(#tassel)" stroke-width="2.2" stroke-linecap="round"/>
-  <path d="M48,50 L51,54 M48,50 L45,54" stroke="url(#tassel)" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-
-  <g transform="translate(32 32) scale(0.55) translate(-18 -18)">
-    <path d="M5,18 L15,28 L31,8" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.0"/>
+    <!-- Right wreath -->
+    <path d="M 78 55 C 80 42 72 32 64 26 C 66 30 68 36 68 42 C 72 46 76 50 78 55 Z"/>
+    <circle cx="77" cy="50" r="2.2"/>
+    <circle cx="74" cy="42" r="2.2"/>
+    <circle cx="69" cy="35" r="2.2"/>
+    <circle cx="63" cy="30" r="2"/>
   </g>
+
+  <!-- Graduation Cap (Mortarboard) -->
+  <polygon points="50,22 72,30 50,38 28,30" fill="#fef08a" stroke="#eab308" stroke-width="1.2"/>
+  <path d="M 38 34 L 38 42 C 38 46 62 46 62 42 L 62 34 Z" fill="#eab308"/>
+  <circle cx="50" cy="30" r="1.5" fill="#ca8a04"/>
+  <path d="M 50 30 L 67 36" stroke="#ca8a04" stroke-width="1"/>
+  <circle cx="67" cy="37" r="1.8" fill="#fef08a"/>
+
+  <!-- Open Book -->
+  <path d="M 49 53 L 34 50 L 34 62 L 49 65 Z" fill="#f8fafc" stroke="#eab308" stroke-width="0.8"/>
+  <path d="M 51 53 L 66 50 L 66 62 L 51 65 Z" fill="#f8fafc" stroke="#eab308" stroke-width="0.8"/>
+  <rect x="49" y="52.5" width="2" height="13" fill="#ca8a04"/>
+  <!-- Lines on book -->
+  <line x1="36" y1="53" x2="46" y2="55" stroke="#94a3b8" stroke-width="0.7"/>
+  <line x1="36" y1="56" x2="46" y2="58" stroke="#94a3b8" stroke-width="0.7"/>
+  <line x1="54" y1="55" x2="64" y2="53" stroke="#94a3b8" stroke-width="0.7"/>
+  <line x1="54" y1="58" x2="64" y2="56" stroke="#94a3b8" stroke-width="0.7"/>
+
+  <!-- Stars -->
+  <polygon points="50,68 51,71 54,71 51.5,73 52.5,76 50,74 47.5,76 48.5,73 46,71 49,71" fill="#fef08a"/>
+  <polygon points="43,69 43.8,71.2 46,71.2 44.2,72.6 45,74.8 43,73.4 41,74.8 41.8,72.6 40,71.2 42.2,71.2" fill="#eab308" transform="scale(0.85) translate(8, 12)"/>
+  <polygon points="57,69 57.8,71.2 60,71.2 58.2,72.6 59,74.8 57,73.4 55,74.8 55.8,72.6 54,71.2 56.2,71.2" fill="#eab308" transform="scale(0.85) translate(8, 12)"/>
+
+  <!-- Ribbon banner -->
+  <path d="M 28 80 L 24 76 L 28 72 L 72 72 L 76 76 L 72 80 Z" fill="#eab308"/>
 </svg>

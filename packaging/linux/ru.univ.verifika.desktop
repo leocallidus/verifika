@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Верифика
+Comment=Кроссплатформенная система тестирования студентов с детальной аналитикой для преподавателей
+GenericName=Система тестирования
+Exec=verifika %U
+Icon=ru.univ.verifika
+Type=Application
+Terminal=false
+Categories=Education;Science;
+MimeType=x-scheme-handler/verifika;
+StartupNotify=true
+StartupWMClass=verifika

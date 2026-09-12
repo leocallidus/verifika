@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>ru.univ.verifika</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Верифика</name>
+  <summary>Кроссплатформенная система тестирования студентов</summary>
+  <description>
+    <p>
+      Верифика — современная кроссплатформенная система тестирования студентов
+      с расширенной аналитикой, защитой от нарушений и поддержкой различных типов вопросов.
+    </p>
+  </description>
+  <launchable type="desktop-id">ru.univ.verifika.desktop</launchable>
+  <url type="homepage">https://github.com/leocallidus/verifika</url>
+  <provides>
+    <binary>verifika</binary>
+  </provides>
+  <releases>
+    <release version="1.0.0" date="2026-09-12"/>
+  </releases>
+  <developer_name>Verifika Team</developer_name>
+</component>

@@ -1,0 +1,420 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: false
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux-x86_64:
+    name: Linux x86_64 (.deb, .rpm, .AppImage, .pkg.tar.zst, .flatpak)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Install system dependencies
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libssl-dev \
+            libsoup-3.0-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libasound2-dev \
+            rpm \
+            libfuse2 \
+            libarchive-tools \
+            zstd \
+            flatpak \
+            flatpak-builder
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          bun install --frozen-lockfile
+
+      - name: Build Tauri bundles (.deb, .rpm, .AppImage)
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+          NO_STRIP: "true"
+        run: |
+          cd frontend
+          bun run tauri build --bundles deb,rpm,appimage
+
+      - name: Build Arch Linux package (.pkg.tar.zst)
+        run: |
+          chmod +x packaging/linux/package-arch.sh
+          ./packaging/linux/package-arch.sh frontend/src-tauri/target/release/verifika x86_64 1.0.0 dist-packages
+
+      - name: Build Flatpak bundle (.flatpak)
+        run: |
+          chmod +x packaging/linux/build-flatpak.sh
+          ./packaging/linux/build-flatpak.sh frontend/src-tauri/target/release/verifika x86_64 1.0.0 dist-packages
+
+      - name: Collect Linux x86_64 packages
+        run: |
+          mkdir -p dist-linux-x86_64
+          find frontend/src-tauri/target -name "*.deb" -exec cp {} dist-linux-x86_64/ \;
+          find frontend/src-tauri/target -name "*.rpm" -exec cp {} dist-linux-x86_64/ \;
+          find frontend/src-tauri/target -name "*.AppImage" -exec cp {} dist-linux-x86_64/ \;
+          cp dist-packages/*x86_64* dist-linux-x86_64/
+          ls -la dist-linux-x86_64/
+
+      - name: Upload Linux x86_64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-linux-x86_64
+          path: dist-linux-x86_64/*
+
+  build-linux-arm64:
+    name: Linux ARM64 (.deb, .rpm, .AppImage, .pkg.tar.zst, .flatpak)
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-unknown-linux-gnu
+
+      - name: Install system dependencies
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libssl-dev \
+            libsoup-3.0-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libasound2-dev \
+            rpm \
+            libfuse2 \
+            libarchive-tools \
+            zstd \
+            flatpak \
+            flatpak-builder
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          bun install --frozen-lockfile
+
+      - name: Build Tauri bundles (.deb, .rpm, .AppImage)
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+          NO_STRIP: "true"
+        run: |
+          cd frontend
+          bun run tauri build --bundles deb,rpm,appimage
+
+      - name: Build Arch Linux package (.pkg.tar.zst)
+        run: |
+          chmod +x packaging/linux/package-arch.sh
+          ./packaging/linux/package-arch.sh frontend/src-tauri/target/release/verifika aarch64 1.0.0 dist-packages
+
+      - name: Build Flatpak bundle (.flatpak)
+        run: |
+          chmod +x packaging/linux/build-flatpak.sh
+          ./packaging/linux/build-flatpak.sh frontend/src-tauri/target/release/verifika aarch64 1.0.0 dist-packages
+
+      - name: Collect Linux ARM64 packages
+        run: |
+          mkdir -p dist-linux-arm64
+          find frontend/src-tauri/target -name "*.deb" -exec cp {} dist-linux-arm64/ \;
+          find frontend/src-tauri/target -name "*.rpm" -exec cp {} dist-linux-arm64/ \;
+          find frontend/src-tauri/target -name "*.AppImage" -exec cp {} dist-linux-arm64/ \;
+          cp dist-packages/*aarch64* dist-linux-arm64/
+          ls -la dist-linux-arm64/
+
+      - name: Upload Linux ARM64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-linux-arm64
+          path: dist-linux-arm64/*
+
+  build-windows-x86_64:
+    name: Windows x86_64 (Setup & Portable)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Install frontend dependencies
+        shell: pwsh
+        run: |
+          cd frontend
+          bun install --frozen-lockfile
+
+      - name: Build Tauri NSIS setup
+        shell: pwsh
+        run: |
+          cd frontend
+          bun run tauri build --bundles nsis
+
+      - name: Collect Windows x86_64 packages
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist-windows-x86_64
+          
+          # Setup installer
+          $nsisFiles = Get-ChildItem -Path "frontend/src-tauri/target/release/bundle/nsis/*.exe"
+          if ($nsisFiles) {
+            Copy-Item $nsisFiles[0].FullName -Destination "dist-windows-x86_64/Verifika_1.0.0_x64-setup.exe"
+          }
+
+          # Portable executable and zip
+          $binPath = "frontend/src-tauri/target/release/verifika.exe"
+          if (Test-Path $binPath) {
+            Copy-Item $binPath -Destination "dist-windows-x86_64/Verifika_1.0.0_x64-portable.exe"
+            Copy-Item $binPath -Destination "Verifika.exe"
+            Compress-Archive -Path "Verifika.exe" -DestinationPath "dist-windows-x86_64/Verifika_1.0.0_x64-portable.zip"
+            Remove-Item "Verifika.exe"
+          }
+
+          Get-ChildItem dist-windows-x86_64
+
+      - name: Upload Windows x86_64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-windows-x86_64
+          path: dist-windows-x86_64/*
+
+  build-windows-arm64:
+    name: Windows ARM64 (Setup & Portable)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-pc-windows-msvc
+
+      - name: Setup MSVC for ARM64
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64_arm64
+
+      - name: Install frontend dependencies
+        shell: pwsh
+        run: |
+          cd frontend
+          bun install --frozen-lockfile
+
+      - name: Build Tauri for Windows ARM64
+        shell: pwsh
+        run: |
+          cd frontend
+          try {
+            bun run tauri build --target aarch64-pc-windows-msvc --bundles nsis
+          } catch {
+            Write-Warning "Tauri NSIS bundling step failed, compiling ARM64 binary"
+            bun run tauri build --target aarch64-pc-windows-msvc --no-bundle
+          }
+
+      - name: Collect Windows ARM64 packages
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist-windows-arm64
+
+          # Portable binary
+          $binPath = "frontend/src-tauri/target/aarch64-pc-windows-msvc/release/verifika.exe"
+          if (Test-Path $binPath) {
+            Copy-Item $binPath -Destination "dist-windows-arm64/Verifika_1.0.0_arm64-portable.exe"
+            Copy-Item $binPath -Destination "Verifika.exe"
+            Compress-Archive -Path "Verifika.exe" -DestinationPath "dist-windows-arm64/Verifika_1.0.0_arm64-portable.zip"
+            Remove-Item "Verifika.exe"
+          }
+
+          # Check for NSIS installer
+          $nsisFiles = Get-ChildItem -Path "frontend/src-tauri/target/aarch64-pc-windows-msvc/release/bundle/nsis/*.exe" -ErrorAction SilentlyContinue
+          if ($nsisFiles) {
+            Copy-Item $nsisFiles[0].FullName -Destination "dist-windows-arm64/Verifika_1.0.0_arm64-setup.exe"
+          } else {
+            # Build installer using fallback NSIS script
+            Write-Host "Creating ARM64 NSIS installer via makensis..."
+            makensis -DOUTFILE="dist-windows-arm64/Verifika_1.0.0_arm64-setup.exe" -DBINFILE="$binPath" packaging/windows/installer.nsi
+          }
+
+          Get-ChildItem dist-windows-arm64
+
+      - name: Upload Windows ARM64 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-windows-arm64
+          path: dist-windows-arm64/*
+
+  build-macos:
+    name: macOS DMG (Universal, Apple Silicon, Intel)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          bun install --frozen-lockfile
+
+      - name: Build Universal DMG
+        run: |
+          cd frontend
+          bun run tauri build --target universal-apple-darwin --bundles dmg
+
+      - name: Build Apple Silicon & Intel DMGs
+        run: |
+          cd frontend
+          bun run tauri build --target aarch64-apple-darwin --bundles dmg || true
+          bun run tauri build --target x86_64-apple-darwin --bundles dmg || true
+
+      - name: Collect macOS DMG packages
+        run: |
+          mkdir -p dist-macos
+          find frontend/src-tauri/target -name "*.dmg" -exec cp {} dist-macos/ \;
+          ls -la dist-macos/
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-macos
+          path: dist-macos/*
+
+  publish-release:
+    name: Publish GitHub Release
+    needs:
+      - build-linux-x86_64
+      - build-linux-arm64
+      - build-windows-x86_64
+      - build-windows-arm64
+      - build-macos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded-artifacts
+
+      - name: Organize release files and compute checksums
+        run: |
+          mkdir -p release-files
+          find downloaded-artifacts -type f -exec cp {} release-files/ \;
+          cd release-files
+          sha256sum * > SHA256SUMS.txt
+          echo "=== Release Files ==="
+          ls -lh
+          echo "=== SHA256 Checksums ==="
+          cat SHA256SUMS.txt
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${{ github.event.inputs.tag || github.ref_name }}"
+          if [[ ! "$TAG_NAME" =~ ^v ]]; then
+            TAG_NAME="v1.0.0"
+          fi
+          VERSION="${TAG_NAME#v}"
+
+          NOTES="## Verifika ${TAG_NAME}
+
+          Кроссплатформенная система тестирования студентов Верифика.
+
+          ### 📦 Linux Packages
+          - **X86_64**:
+            - \`.pkg.tar.zst\` (Arch Linux / Manjaro)
+            - \`.deb\` (Debian / Ubuntu / Mint / Astra Linux)
+            - \`.rpm\` (Fedora / RHEL / openSUSE / ALT Linux)
+            - \`.AppImage\` (Universal Linux portable)
+            - \`.flatpak\` (Flatpak bundle)
+          - **ARM64**:
+            - \`.pkg.tar.zst\` (Arch Linux ARM)
+            - \`.deb\` (Debian / Ubuntu ARM)
+            - \`.rpm\` (Fedora / RHEL ARM)
+            - \`.AppImage\` (Universal Linux ARM)
+            - \`.flatpak\` (Flatpak bundle ARM)
+
+          ### 🪟 Windows Packages
+          - **X86_64**:
+            - Setup Installer (\`.exe\`)
+            - Portable (\`.zip\` & \`.exe\`)
+          - **ARM64**:
+            - Setup Installer (\`.exe\`)
+            - Portable (\`.zip\` & \`.exe\`)
+
+          ### 🍏 macOS Packages
+          - **Universal DMG** (Apple Silicon M1/M2/M3/M4 & Intel x86_64)
+
+          ### 🔒 Checksums
+          Check \`SHA256SUMS.txt\` for package verification."
+
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Updating existing release $TAG_NAME..."
+            gh release upload "$TAG_NAME" release-files/* --clobber
+          else
+            echo "Creating release $TAG_NAME..."
+            gh release create "$TAG_NAME" release-files/* \
+              --title "Verifika ${TAG_NAME}" \
+              --notes "$NOTES"
+          fi

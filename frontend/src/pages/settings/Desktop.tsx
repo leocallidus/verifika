@@ -466,7 +466,7 @@ export default function SettingsDesktop() {
             Обновления
           </h2>
           <p className="text-sm text-[var(--color-text-muted)]">
-            Сейчас установлена версия <b>0.1.0</b>.
+            Сейчас установлена версия <b>1.0.0</b>.
             {s.update_available ? (
               <>
                 {" "}
